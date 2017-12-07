@@ -1,0 +1,65 @@
+@charset "utf-8";
+
+#content{
+	padding-bottom: 20px;
+}
+
+article{
+	margin: 20px 0;
+	background-color: white;
+	border-radius: 10px;
+}
+
+article h1{
+	margin: 0;
+	padding: 35px 0 5px;
+	text-align: center;
+	font-size: 30px;
+}
+
+article > div{
+	text-align: center;
+}
+
+article .sub{ color: #666 }
+
+article .count-info{
+	padding: 9px 0 6px;
+	border: none;
+	outline: none;
+	border-radius: 0;
+	background-color: #16447E;
+	color: white;
+	font-size: 15px;
+
+	width: 400px;
+	margin: 10px auto 15px;
+}
+
+
+article ul{
+	padding-bottom: 30px;
+	list-style: none;
+	margin: 10px 0 0;
+	padding: 0;
+}
+
+article ul li{
+	padding: 12px 20px;
+	border-top: 1px solid #eee;
+	text-align: left;
+}
+
+article ul li h4{
+	margin: 0;
+	padding: 3px 0;
+}
+
+article ul li .content{
+}
+
+article ul li .time{
+	color: #aaa;
+	font-size: 13px;
+	padding-top: 2px;
+}

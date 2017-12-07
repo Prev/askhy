@@ -1,0 +1,49 @@
+{% extends "_layout.html" %}
+
+{% block head %}
+	<link rel="stylesheet" href="/static/css/detail.css">
+{% endblock %}
+
+{% block content %}
+	<article>
+		<h1>{{ message }}</h1>
+		<div class="sub">
+			<div class="time">{{ register_time.strftime("%Y년 %m월 %d일") }}</div>
+		</div>
+		
+		<div class="count-info">총 {{ cheers | length }}개의 응원</div>
+
+		<ul>
+			{% for id, ask_id, message, ip_address, register_time in cheers %}
+			<li>
+				<h4>{{ ip_address | hide_ip_address }}</h4>
+				<div class="content">{{ message }}</div>
+				<div class="time">{{ register_time.strftime("%Y년 %m월 %d일") }}</div>
+			</li>
+			{% endfor %}
+		</ul>
+	</article>
+
+	<button class="add-btn">
+		<i class="fa fa-plus-square-o" aria-hidden="true"></i>
+		<span onclick="$('#cheer-popup').fadeIn()">나도 응원하기</span>
+	</button>
+
+
+	<div id="cheer-popup" class="popup">
+		<div class="mask" onclick="$(this).parent().fadeOut()"></div>
+		<div class="content">
+			<form action="/cheer" method="POST">
+				<div align="center">
+					<img src="/static/images/cheer.png" height="34">
+				</div>
+				<div>
+					<input type="hidden" name="ask_id" value="{{ id }}">
+					<input type="hidden" name="back" value="{{ current_url }}">
+					<textarea name="message" placeholder="응원 메시지를 입력 해 주세요!"></textarea>
+				</div>
+				<input type="submit" name="응원하기" class="primary">
+			</form>
+		</div>
+	</div>
+{% endblock %}

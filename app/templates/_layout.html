@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>부탁하냥</title>
+
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	{% block meta %}{% endblock %}
+
+	<link rel="shortcut icon" href="/static/favicon.ico">
+	
+	<link rel="stylesheet" href="/static/css/stylesheet.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+	{% block head %}{% endblock %}
+</head>
+<body>
+	<header>
+		<a href="/">
+			<h1 id="logo">
+				<span class="hidden2">부탁하냥</span>
+			</h1>
+		</a>
+	</header>
+	<section id="content">
+		{% block content %}{% endblock %}	
+	</section>
+</body>
+</html>
