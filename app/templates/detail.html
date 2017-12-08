@@ -33,12 +33,11 @@
 	<div id="cheer-popup" class="popup">
 		<div class="mask" onclick="$(this).parent().fadeOut()"></div>
 		<div class="content">
-			<form action="/cheer" method="POST">
+			<form action="/ask/{{ id }}/cheer" method="POST">
 				<div align="center">
 					<img src="/static/images/cheer.png" height="34">
 				</div>
 				<div>
-					<input type="hidden" name="ask_id" value="{{ id }}">
 					<input type="hidden" name="back" value="{{ current_url }}">
 					<textarea name="message" placeholder="응원 메시지를 입력 해 주세요!"></textarea>
 				</div>

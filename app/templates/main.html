@@ -2,6 +2,13 @@
 
 {% block head %}
 	<link rel="stylesheet" href="/static/css/main.css">
+
+	<script type="text/javascript">
+		function openCheerPopup(askId) {
+			$('#cheer-popup form').attr('action', '/ask/'+askId+'/cheer');
+			$('#cheer-popup').fadeIn();
+		}
+	</script>
 {% endblock %}
 
 {% block content %}
@@ -13,7 +20,7 @@
 			<div class="time">{{ register_time.strftime("%Y년 %m월 %d일") }}</div>
 			
 			<div class="btn-container">
-				<button class="cheer-btn primary" onclick="$('#cheer-popup .ask-id').val({{ id }}); $('#cheer-popup').fadeIn()">
+				<button class="cheer-btn primary" onclick="openCheerPopup({{ id }})">
 					<div class="highlight"></div>
 					<span>응원하냥! ({{ cheer_cnt }}명)</span>
 				</button>
@@ -50,12 +57,11 @@
 	<div id="cheer-popup" class="popup">
 		<div class="mask" onclick="$(this).parent().fadeOut()"></div>
 		<div class="content">
-			<form action="/cheer" method="POST">
+			<form action="/ask/??/cheer" method="POST">
 				<div align="center">
 					<img src="/static/images/cheer.png" height="34">
 				</div>
 				<div>
-					<input class="ask-id" type="hidden" name="ask_id">
 					<textarea name="message" placeholder="응원 메시지를 입력 해 주세요!"></textarea>
 				</div>
 				<input type="submit" name="응원하기" class="primary">
