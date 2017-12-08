@@ -123,21 +123,30 @@ def add_cheer(ask_id):
 	conn = get_db()
 	message = request.form.get('message')
 
-	with conn.cursor() as cursor :
-		sql = "INSERT INTO `cheer` (`ask_id`, `message`, `ip_address`) VALUES (%s, %s, %s)"
-		r = cursor.execute(sql, (ask_id, message, request.remote_addr))
+	ultra = request.form.get('ultra')
 
-	conn.commit()
 
-	with conn.cursor() as cursor :
-		cursor.execute("SELECT COUNT(*) FROM `cheer` WHERE ask_id = %s", (ask_id, ))
-		row = cursor.fetchone()
-		cheer_cnt = row[0]
-		
-		# Update cache
-		arcus_client = arcustool.get_client()
-		arcus_client.set('askhy:chearcnt_' + str(ask_id), cheer_cnt)
+	def run() :
+		with conn.cursor() as cursor :
+			sql = "INSERT INTO `cheer` (`ask_id`, `message`, `ip_address`) VALUES (%s, %s, %s)"
+			r = cursor.execute(sql, (ask_id, message, request.remote_addr))
 
+		conn.commit()
+
+		with conn.cursor() as cursor :
+			cursor.execute("SELECT COUNT(*) FROM `cheer` WHERE ask_id = %s", (ask_id, ))
+			row = cursor.fetchone()
+			cheer_cnt = row[0]
+
+			# Update cache
+			arcus_client = arcustool.get_client()
+			arcus_client.set('askhy:chearcnt_' + str(ask_id), cheer_cnt)
+
+	if ultra :
+		for i in range(0, 100) :
+			run()
+	else :
+		run()
 
 	redirect_url = request.form.get('back', '/#c' + str(ask_id))
 	return redirect(redirect_url)
