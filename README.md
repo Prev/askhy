@@ -1,6 +1,6 @@
 # ASKHY with ARCUS
 
-기존 [MySQL만 쓰던 ASK HY 프로젝트](https://github.com/Prev/askhy/)에서 [NAVER ARCUS](https://naver.github.io/arcus/)를 캐시로 넣어 view 성능을 개선한 어플리케이션입니다.
+기존 MySQL만 쓰던 [ASKHY(https://github.com/Prev/askhy/)] 웹 어플리케이션에서 [NAVER ARCUS](https://naver.github.io/arcus/)를 캐시로 넣어 view 성능을 개선한 버전입니다.
 
 ```bash
 docker run -p 8080:80 \
