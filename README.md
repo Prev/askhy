@@ -1,8 +1,38 @@
-# ASKHY [부탁하냥]
+# ASKHY with REDIS
+
+기존 MySQL만 쓰던 [ASKHY](https://github.com/Prev/askhy/) 웹 어플리케이션에서 [Redis](https://redis.io/)를 캐시로 넣어 view 성능을 개선한 버전입니다.
+
+[NAVER nBase-ARC](https://github.com/naver/nbase-arc)와도 호환됩니다.
+
+
+### How to run
+
+```bash
+docker run -p 8080:80 \
+  --link mysql:mysql_host \
+  -e DATABASE_HOST=mysql_host \
+  -e DATABASE_USER=root \
+  -e DATABASE_PASS=root \
+  -e DATABASE_NAME=test \
+  -e REDIS_HOST=172.17.0.9 \
+  -e REDIS_PORT=6000 \
+  --name askhy \
+  askhy
+```
+
+기존 코드에서 
+`-e REDIS_HOST=172.17.0.9` 환경 변수와 `REDIS_PORT=6000` 환경 변수를 추가했습니다.  
+
+각각의 환경 변수는 `redis`의 서버 주소와 포트를 써야합니다.
+
+
+----
+
+# ASKHY [부탁하냥] : 기존 프로젝트
 
 [![Docker Automated build](https://img.shields.io/docker/automated/prev/askhy.svg)](https://hub.docker.com/r/prev/askhy/)
 
-Flask와 MySQL을 이용하고 docker를 이용해서 패키징한 너무너무 간단한 웹 어플리케이션
+Flask와 MySQL을 이용하고 docker를 이용해서 패키징 한 너무너무 간단한 웹 어플리케이션
 
 ![Screenshot](https://prev.kr/askhy/screenshot.png)
 
@@ -10,7 +40,7 @@ Flask와 MySQL을 이용하고 docker를 이용해서 패키징한 너무너무 
 ## How to run
 
 MySQL 컨테이너가 없다면 다음 명령어를 먼저 실행해야 합니다.  
-(비밀번호나 컨테이너 이름 등은 취향 껏 수정하되 아래 `askhy` 컨테이너 실행시 알맞게 설정해주어야 합니다)
+(비밀번호나 컨테이너 이름 등은 취향껏 수정하되 아래 `askhy` 컨테이너 실행시 알맞게 설정해주어야 합니다)
 
 ```bash
 docker run -d \
@@ -22,7 +52,7 @@ docker run -d \
 
 ---
 
-그 뒤에 이 명령어를 통해 해당 어플리케이션의 이미지를 다운받고 컨테이너를 실행합니다.
+그 뒤에 이 명령어를 통해 해당 어플리케이션의 이미지를 다운로드하고 컨테이너를 실행합니다.
 
 ```bash
 docker run -p 8080:80 \
@@ -43,4 +73,3 @@ docker run -p 8080:80 \
 
 - [Flask](https://github.com/pallets/flask)
 - [PyMySQL](https://github.com/PyMySQL/PyMySQL)
-

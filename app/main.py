@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect
 import os
 
 from core.dbdriver import get_db, init_tables
+from core import redisdriver
 
 app = Flask(__name__)
 
@@ -14,12 +15,46 @@ def index():
 	""" Index page
 	  Show list of `asks`, and cheer count of each ask
 	"""
+
+	redis_client = redisdriver.get_client()
+	dataset = []
+
 	with get_db().cursor() as cursor :
-		cursor.execute("SELECT *, (SELECT COUNT(*) FROM `cheer` WHERE ask_id = ask.id) AS cheer_cnt FROM `ask`")
+		# Get data in `ask` only (not with cheer count)
+		cursor.execute("SELECT * FROM `ask`")
 		result = cursor.fetchall()
 
+		success = True
+
+		for id, message, ip_address, register_time in result :
+			cached_cnt = redis_client.get('askhy:chearcnt_' + str(id))
+
+			if cached_cnt == None :
+				# Re-run query with count(*)
+				success = False
+				break
+			else :
+				print("Cache hit: " + str(id))
+				dataset.append((id, message, ip_address, register_time, int(cached_cnt)))
+
+	if not success :
+		with get_db().cursor() as cursor :
+			# Get data with cheer count
+			print("Cache not exists. Create cache")
+			
+			cursor.execute("SELECT *, (SELECT COUNT(*) FROM `cheer` WHERE ask_id = ask.id) AS cheer_cnt FROM `ask`")
+			result = cursor.fetchall()
+
+			dataset = []
+
+			for id, message, ip_address, register_time, cheer_cnt in result :
+				cheer_cnt = int(cheer_cnt)
+				dataset.append((id, message, ip_address, register_time, cheer_cnt))
+				redis_client.set('askhy:chearcnt_' + str(id), cheer_cnt)
+
+
 	return render_template('main.html',
-		dataset=result,
+		dataset=dataset,
 	)
 
 
@@ -84,6 +119,16 @@ def add_cheer(ask_id):
 		r = cursor.execute(sql, (ask_id, message, request.remote_addr))
 
 	conn.commit()
+
+	with conn.cursor() as cursor :
+		cursor.execute("SELECT COUNT(*) FROM `cheer` WHERE ask_id = %s", (ask_id, ))
+		row = cursor.fetchone()
+		cheer_cnt = row[0]
+
+		# Update cache
+		redis_client = redisdriver.get_client()
+		redis_client.set('askhy:chearcnt_' + str(ask_id), int(cheer_cnt))
+
 
 	redirect_url = request.form.get('back', '/#c' + str(ask_id))
 	return redirect(redirect_url)
