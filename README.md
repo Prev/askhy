@@ -1,3 +1,30 @@
+# ASKHY with ARCUS
+
+기존 [MySQL만 쓰던 ASK HY 프로젝트](https://github.com/Prev/askhy/)에서 [NAVER ARCUS](https://naver.github.io/arcus/)를 캐시로 넣어 view 성능을 개선한 어플리케이션입니다.
+
+```bash
+docker run -p 8080:80 \
+  --link mysql:mysql_host \
+  -e DATABASE_HOST=mysql_host \
+  -e DATABASE_USER=root \
+  -e DATABASE_PASS=root \
+  -e DATABASE_NAME=test \
+  -e ARCUS_URL=172.17.0.4:2181 \
+  -e ARCUS_SERVICE_CODE=ruo91-cloud \
+  --name askhy \
+  askhy
+```
+
+기존 코드에서 
+`-e ARCUS_URL=172.17.0.4` 환경변수와 `-e ARCUS_SERVICE_CODE=ruo91-cloud` 환경변수를 추가했습니다.  
+
+이때 `172.17.0.4:2181`은 arcus의 서버 주소와 포트를 써야합니다.
+
+
+----
+> 기존 프로젝트 README
+
+
 # ASKHY [부탁하냥]
 
 [![Docker Automated build](https://img.shields.io/docker/automated/prev/askhy.svg)](https://hub.docker.com/r/prev/askhy/)

@@ -13,9 +13,10 @@ def get_client() :
 	if _arcus_client: return _arcus_client
 	else :
 		_arcus_client = Arcus(ArcusLocator(ArcusMCNodeAllocator(ArcusTranscoder())))
+
 		_arcus_client.connect(
-			os.environ.get('ARCUS_URL', '127.0.0.1:2183'),
-			os.environ.get('ARCUS_SERVICE_CODE', 'ruo91-cloud'),
+			os.environ.get('ARCUS_URL'),
+			os.environ.get('ARCUS_SERVICE_CODE'),
 		)
 
 		return _arcus_client
