@@ -16,7 +16,7 @@ docker run -p 8080:80 \
 ```
 
 기존 코드에서 
-`-e ARCUS_URL=172.17.0.4` 환경변수와 `-e ARCUS_SERVICE_CODE=ruo91-cloud` 환경변수를 추가했습니다.  
+`-e ARCUS_URL=172.17.0.4:2181` 환경변수와 `-e ARCUS_SERVICE_CODE=ruo91-cloud` 환경변수를 추가했습니다.  
 
 이때 `172.17.0.4:2181`은 arcus의 서버 주소와 포트를 써야합니다.
 

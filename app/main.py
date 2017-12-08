@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect
 import os
 
 from core.dbdriver import get_db, init_tables
-from core import arcustool
+from core import arcusdriver
 
 class bcolors:
 	HEADER = '\033[95m'
@@ -26,7 +26,7 @@ def index():
 	""" Index page
 	  Show list of `asks`, and cheer count of each ask
 	"""
-	arcus_client = arcustool.get_client()
+	arcus_client = arcusdriver.get_client()
 	dataset = []
 
 	with get_db().cursor() as cursor :
@@ -139,7 +139,7 @@ def add_cheer(ask_id):
 			cheer_cnt = row[0]
 
 			# Update cache
-			arcus_client = arcustool.get_client()
+			arcus_client = arcusdriver.get_client()
 			arcus_client.set('askhy:chearcnt_' + str(ask_id), cheer_cnt)
 
 	if ultra :
