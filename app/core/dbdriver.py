@@ -2,9 +2,9 @@ import pymysql
 import os
 
 _db_instance = None
-""" Get database connection singleton object
-"""
 def get_db() :
+	""" Get database connection singleton object
+	"""
 	global _db_instance
 	if _db_instance: return _db_instance
 	else :
@@ -20,10 +20,9 @@ def get_db() :
 		return _db_instance
 
 
-"""
-Init tables in this app
-"""
 def init_tables() :
+	""" Init tables in this app
+	"""
 	with get_db().cursor() as cursor :
 		try :
 			cursor.execute("SELECT 1 FROM ask")
