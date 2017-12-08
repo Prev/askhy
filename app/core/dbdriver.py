@@ -11,7 +11,7 @@ def get_db() :
 		_db_instance = pymysql.connect(
 			host=os.environ.get('DATABASE_HOST', 'localhost'),
 			user=os.environ.get('DATABASE_USER', 'root'),
-			passwd=os.environ.get('DATABASE_PASS', ''),
+			passwd=os.environ.get('DATABASE_PASS', 'apmsetup'),
 			db=os.environ.get('DATABASE_NAME', 'test'),
 			port=int(os.environ.get('DATABASE_PORT', 3306)),
 			charset='utf8'

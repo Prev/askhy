@@ -2,6 +2,18 @@ from flask import Flask, render_template, request, redirect
 import os
 
 from core.dbdriver import get_db, init_tables
+from core import arcustool
+
+class bcolors:
+	HEADER = '\033[95m'
+	OKBLUE = '\033[94m'
+	OKGREEN = '\033[92m'
+	WARNING = '\033[93m'
+	FAIL = '\033[91m'
+	ENDC = '\033[0m'
+	BOLD = '\033[1m'
+	UNDERLINE = '\033[4m'
+
 
 app = Flask(__name__)
 
@@ -14,12 +26,44 @@ def index():
 	""" Index page
 	  Show list of `asks`, and cheer count of each ask
 	"""
+	arcus_client = arcustool.get_client()
+	dataset = []
+
 	with get_db().cursor() as cursor :
-		cursor.execute("SELECT *, (SELECT COUNT(*) FROM `cheer` WHERE ask_id = ask.id) AS cheer_cnt FROM `ask`")
+		# Get data in `ask` only (not with cheer count)
+		cursor.execute("SELECT * FROM `ask`")
 		result = cursor.fetchall()
 
+		success = True
+
+		for id, message, ip_address, register_time in result :
+			cache = arcus_client.get('askhy:chearcnt_' + str(id)).get_result()
+
+			if cache == None :
+				# Re-run query with count(*)
+				success = False
+				break
+			else :
+				print(bcolors.OKGREEN + "Cache hit: " + str(id) + bcolors.ENDC)
+				dataset.append((id, message, ip_address, register_time, cache))
+		
+	if not success :
+		with get_db().cursor() as cursor :
+			# Get data with cheer count
+			print(bcolors.WARNING + "Cache not exists. Create cache" + bcolors.ENDC)
+			
+			cursor.execute("SELECT *, (SELECT COUNT(*) FROM `cheer` WHERE ask_id = ask.id) AS cheer_cnt FROM `ask`")
+			result = cursor.fetchall()
+
+			dataset = []
+
+			for id, message, ip_address, register_time, cheer_cnt in result :
+				dataset.append((id, message, ip_address, register_time, cheer_cnt))
+				arcus_client.set('askhy:chearcnt_' + str(id), cheer_cnt)
+
+
 	return render_template('main.html',
-		dataset=result,
+		dataset=dataset,
 	)
 
 
@@ -85,6 +129,16 @@ def add_cheer(ask_id):
 
 	conn.commit()
 
+	with conn.cursor() as cursor :
+		cursor.execute("SELECT COUNT(*) FROM `cheer` WHERE ask_id = %s", (ask_id, ))
+		row = cursor.fetchone()
+		cheer_cnt = row[0]
+		
+		# Update cache
+		arcus_client = arcustool.get_client()
+		arcus_client.set('askhy:chearcnt_' + str(ask_id), cheer_cnt)
+
+
 	redirect_url = request.form.get('back', '/#c' + str(ask_id))
 	return redirect(redirect_url)
 
@@ -109,5 +163,5 @@ if __name__ == '__main__':
 	app.run(
 		host='0.0.0.0',
 		debug=True,
-		port=os.environ.get('APP_PORT', 8080)
+		port=os.environ.get('APP_PORT', 8081)
 	)
