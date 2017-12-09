@@ -10,7 +10,7 @@ docker run -p 8080:80 \
   -e DATABASE_HOST=mysql_host \
   -e DATABASE_USER=root \
   -e DATABASE_PASS=root \
-  -e DATABASE_NAME=test \
+  -e DATABASE_NAME=askhy \
   -e ARCUS_URL=172.17.0.4:2181 \
   -e ARCUS_SERVICE_CODE=ruo91-cloud \
   --name askhy \
