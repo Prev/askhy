@@ -13,7 +13,7 @@ docker run -p 8080:80 \
   -e DATABASE_HOST=mysql_host \
   -e DATABASE_USER=root \
   -e DATABASE_PASS=root \
-  -e DATABASE_NAME=test \
+  -e DATABASE_NAME=askhy \
   -e REDIS_HOST=172.17.0.9 \
   -e REDIS_PORT=6000 \
   --name askhy \
