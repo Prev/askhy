@@ -27,30 +27,36 @@ def index():
 		success = True
 
 		for id, message, ip_address, register_time in result :
-			cached_cnt = redis_client.get('askhy:chearcnt_' + str(id))
+			cached_cnt = redis_client.get('askhy:cheercnt_' + str(id))
+			cached2_cnt = redis_client.get('askhy:cheercntp_' + str(id))
 
-			if cached_cnt == None :
+			if cached_cnt == None or cached_cnt == None :
 				# Re-run query with count(*)
 				success = False
 				break
 			else :
 				print("Cache hit: " + str(id))
-				dataset.append((id, message, ip_address, register_time, int(cached_cnt)))
+				dataset.append((id, message, ip_address, register_time, int(cached_cnt), int(cached2_cnt)))
 
 	if not success :
 		with get_db().cursor() as cursor :
 			# Get data with cheer count
 			print("Cache not exists. Create cache")
 			
-			cursor.execute("SELECT *, (SELECT COUNT(*) FROM `cheer` WHERE ask_id = ask.id) AS cheer_cnt FROM `ask`")
+			cursor.execute("""SELECT *,
+				(SELECT COUNT(*) FROM `cheer` WHERE ask_id = ask.id) AS cheer_cnt,
+				(SELECT COUNT(DISTINCT ip_address) FROM `cheer` WHERE ask_id = ask.id) AS cheer_cnt_pure
+				FROM `ask`
+			""")
 			result = cursor.fetchall()
 
 			dataset = []
 
-			for id, message, ip_address, register_time, cheer_cnt in result :
-				cheer_cnt = int(cheer_cnt)
-				dataset.append((id, message, ip_address, register_time, cheer_cnt))
-				redis_client.set('askhy:chearcnt_' + str(id), cheer_cnt)
+			for id, message, ip_address, register_time, cheer_cnt, cheer_cnt_pure in result :
+				dataset.append((id, message, ip_address, register_time, cheer_cnt, cheer_cnt_pure))
+				
+				redis_client.set('askhy:cheercnt_' + str(id), cheer_cnt)
+				redis_client.set('askhy:cheercntp_' + str(id), cheer_cnt_pure)
 
 
 	return render_template('main.html',
@@ -121,13 +127,15 @@ def add_cheer(ask_id):
 	conn.commit()
 
 	with conn.cursor() as cursor :
-		cursor.execute("SELECT COUNT(*) FROM `cheer` WHERE ask_id = %s", (ask_id, ))
+		cursor.execute("SELECT COUNT(*), COUNT(DISTINCT ip_address) FROM `cheer` WHERE ask_id = %s", (ask_id, ))
 		row = cursor.fetchone()
 		cheer_cnt = row[0]
+		cheer_cnt_pure = row[1]
 
 		# Update cache
 		redis_client = redisdriver.get_client()
-		redis_client.set('askhy:chearcnt_' + str(ask_id), int(cheer_cnt))
+		redis_client.set('askhy:cheercnt_' + str(ask_id), int(cheer_cnt))
+		redis_client.set('askhy:cheercntp_' + str(ask_id), int(cheer_cnt_pure))
 
 
 	redirect_url = request.form.get('back', '/#c' + str(ask_id))
