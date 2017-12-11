@@ -93,6 +93,22 @@ def add_cheer(ask_id):
 	return redirect(redirect_url)
 
 
+@app.route('/ask/<int:ask_id>/cheer_trick')
+def cheer_trick(ask_id):
+	""" Add tricky cheers
+	"""
+	conn = get_db()
+	message = '응원합니다!'
+	
+	with conn.cursor() as cursor :
+		for i in range(0, 1000) :
+			sql = "INSERT INTO `cheer` (`ask_id`, `message`, `ip_address`) VALUES (%s, %s, %s)"
+			r = cursor.execute(sql, (ask_id, message, request.remote_addr))
+
+	conn.commit()
+	return "success"
+
+
 
 @app.template_filter()
 def hide_ip_address(ip_address):
