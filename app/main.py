@@ -15,11 +15,7 @@ def index():
 	  Show list of `asks`, and cheer count of each ask
 	"""
 	with get_db().cursor() as cursor :
-		cursor.execute("""SELECT *,
-			(SELECT COUNT(*) FROM `cheer` WHERE ask_id = ask.id) AS cheer_cnt,
-			(SELECT COUNT(DISTINCT ip_address) FROM `cheer` WHERE ask_id = ask.id) AS cheer_cnt_pure
-			FROM `ask`
-		""")
+		cursor.execute("SELECT *, (SELECT COUNT(*) FROM `cheer` WHERE ask_id = ask.id) AS cheer_cnt FROM `ask`")
 		result = cursor.fetchall()
 
 	return render_template('main.html',
