@@ -37,35 +37,29 @@ def index():
 		success = True
 
 		for id, message, ip_address, register_time in result :
-			cache = arcus_client.get('askhy:cheercnt_' + str(id)).get_result()
-			cache2 = arcus_client.get('askhy:cheercntp_' + str(id)).get_result()
+			cache = arcus_client.get('askhy:chearcnt_' + str(id)).get_result()
 
-			if cache == None or cache2 == None :
+			if cache == None :
 				# Re-run query with count(*)
 				success = False
 				break
 			else :
 				print(bcolors.OKGREEN + "Cache hit: " + str(id) + bcolors.ENDC)
-				dataset.append((id, message, ip_address, register_time, cache, cache2))
+				dataset.append((id, message, ip_address, register_time, cache))
 		
 	if not success :
 		with get_db().cursor() as cursor :
 			# Get data with cheer count
 			print(bcolors.WARNING + "Cache not exists. Create cache" + bcolors.ENDC)
 			
-			cursor.execute("""SELECT *,
-				(SELECT COUNT(*) FROM `cheer` WHERE ask_id = ask.id) AS cheer_cnt,
-				(SELECT COUNT(DISTINCT ip_address) FROM `cheer` WHERE ask_id = ask.id) AS cheer_cnt_pure
-				FROM `ask`
-			""")
+			cursor.execute("SELECT *, (SELECT COUNT(*) FROM `cheer` WHERE ask_id = ask.id) AS cheer_cnt FROM `ask`")
 			result = cursor.fetchall()
 
 			dataset = []
 
-			for id, message, ip_address, register_time, cheer_cnt, cheer_cnt_pure in result :
-				dataset.append((id, message, ip_address, register_time, cheer_cnt, cheer_cnt_pure))
-				arcus_client.set('askhy:cheercnt_' + str(id), cheer_cnt)
-				arcus_client.set('askhy:cheercntp_' + str(id), cheer_cnt_pure)
+			for id, message, ip_address, register_time, cheer_cnt in result :
+				dataset.append((id, message, ip_address, register_time, cheer_cnt))
+				arcus_client.set('askhy:chearcnt_' + str(id), cheer_cnt)
 
 
 	return render_template('main.html',
@@ -139,16 +133,14 @@ def add_cheer(ask_id):
 
 		conn.commit()
 
-		# Update cache
 		with conn.cursor() as cursor :
-			cursor.execute("SELECT COUNT(*), COUNT(DISTINCT ip_address) FROM `cheer` WHERE ask_id = %s", (ask_id, ))
+			cursor.execute("SELECT COUNT(*) FROM `cheer` WHERE ask_id = %s", (ask_id, ))
 			row = cursor.fetchone()
 			cheer_cnt = row[0]
-			cheer_cnt_pure = row[1]
 
+			# Update cache
 			arcus_client = arcusdriver.get_client()
-			arcus_client.set('askhy:cheercnt_' + str(ask_id), cheer_cnt)
-			arcus_client.set('askhy:cheercntp_' + str(ask_id), cheer_cnt_pure)
+			arcus_client.set('askhy:chearcnt_' + str(ask_id), cheer_cnt)
 
 	if ultra :
 		for i in range(0, 100) :
@@ -159,27 +151,6 @@ def add_cheer(ask_id):
 	redirect_url = request.form.get('back', '/#c' + str(ask_id))
 	return redirect(redirect_url)
 
-
-
-@app.route('/ask/<int:ask_id>/cheer_trick')
-def cheer_trick(ask_id):
-	""" Add tricky cheers
-	"""
-	conn = get_db()
-	message = '응원합니다!'
-	
-	with conn.cursor() as cursor :
-		for i in range(0, 1000) :
-			sql = "INSERT INTO `cheer` (`ask_id`, `message`, `ip_address`) VALUES (%s, %s, %s)"
-			r = cursor.execute(sql, (ask_id, message, request.remote_addr))
-
-	# Remove cache
-	arcus_client = arcusdriver.get_client()
-	arcus_client.delete('askhy:cheercnt_' + str(ask_id))
-	arcus_client.delete('askhy:cheercntp_' + str(ask_id))
-
-	conn.commit()
-	return "success"
 
 
 @app.template_filter()
