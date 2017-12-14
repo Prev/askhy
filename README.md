@@ -44,7 +44,7 @@ docker run -p 8080:80 \
 
 서비스 컨셉은 기본적인 게시판과 비슷하지만 게시글을 `부탁`이라는 이름으로 쓰며, 댓글을 `응원`이라는 이름을 사용한다. MySQL 스키마는 아래와 같다.
 
-![Screenshot](https://prev.kr/askhy/db_scheme.png)
+<img src="https://prev.kr/askhy/db_scheme.png" width="441" alt="DB Scheme">
 
 
 
@@ -66,7 +66,7 @@ docker run -p 8080:80 \
 ├── README.md
 ├── app
 │   ├── core					앱 내부 코드
-│   │   └── dbdriver.py	 			 데이터베이스(MYSQL) 연결 및 초기화용 드라이버
+│   │   └── dbdriver.py	 			데이터베이스(MYSQL) 연결 및 초기화용 드라이버
 │   ├── main.py					URL route와 템플릿을 렌더링하는 메인 코드
 │   ├── static					프론트엔드 정적 파일 
 │   │   ├── css
