@@ -13,17 +13,16 @@
 
 {% block content %}
 	<ul id="asks">
-		{% for id, message, ip_address, register_time, cheer_cnt, cheer_cnt_pure in dataset %}
+		{% for id, message, ip_address, register_time, cheer_cnt in dataset %}
 		<li id="ask-{{ id }}">
 			<div class="highlight"></div>
 			<h4>{{ message }}</h4>
 			<div class="time">{{ register_time.strftime("%Y년 %m월 %d일") }}</div>
 			
 			<div class="btn-container">
-				<button class="cheer-btn primary tooltip" onclick="openCheerPopup({{ id }})">
+				<button class="cheer-btn primary" onclick="openCheerPopup({{ id }})">
 					<div class="highlight"></div>
 					<span>응원하냥! ({{ cheer_cnt }}명)</span>
-					<span class="tooltiptext">순수응원 {{ cheer_cnt_pure }}명</span>
 				</button>
 				<a class="look-inside" href="/ask/{{ id }}">
 					<i class="fa fa-eye" aria-hidden="true"></i>
