@@ -61,18 +61,18 @@ docker run -p 8080:80 \
 
 ```
 .
-├── Dockerfile 						이미지 빌드용 스크립트
-├── LICENSE 						라이선스
+├── Dockerfile 					이미지 빌드용 스크립트
+├── LICENSE 					라이선스
 ├── README.md
 ├── app
-│   ├── core						앱 내부 코드
+│   ├── core					앱 내부 코드
 │   │   └── dbdriver.py	 			 데이터베이스(MYSQL) 연결 및 초기화용 드라이버
-│   ├── main.py						URL route와 템플릿을 렌더링하는 메인 코드
-│   ├── static						 프론트엔드 정적 파일 
+│   ├── main.py					URL route와 템플릿을 렌더링하는 메인 코드
+│   ├── static					프론트엔드 정적 파일 
 │   │   ├── css
 │   │   │   ├── detail.css			'부탁 상세보기'용 CSS
 │   │   │   ├── main.css			'메인'용 CSS
-│   │   │   └── stylesheet.css		 공통 CSS
+│   │   │   └── stylesheet.css			공통 CSS
 │   │   ├── favicon.ico
 │   │   └── images
 │   │       ├── add.png				
